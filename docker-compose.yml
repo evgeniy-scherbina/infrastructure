@@ -1,0 +1,24 @@
+version: '3.2'
+services:
+  # --------------------------------
+  hello:
+    container_name: hello
+    image: escherbina/hello
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - default
+    dns: 172.25.1.30
+    ports:
+      - 8090
+    restart: always
+    command: >
+      hello
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.1/16
