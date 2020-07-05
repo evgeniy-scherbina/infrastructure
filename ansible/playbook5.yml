@@ -1,0 +1,66 @@
+---
+- name: Install Apache
+  hosts: linux
+  become: yes
+
+  vars:
+    source_file: ./website/index.html
+    destin_file: /var/www/html
+
+  tasks:
+
+  - block:
+    - name: Install Apache on Ubuntu
+      apt:
+        name: apache2
+        state: present
+
+    - name: Enable apache during restart
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Copy
+      copy:
+        src: "{{ source_file }}"
+        dest: "{{ destin_file }}"
+        mode: 0555
+      notify: Restart Apache For Debian
+
+    when: ansible_os_family == "Debian"
+
+  - block:
+    - name: Install Apache on RedHat
+      yum:
+        name: httpd
+        state: present
+
+    - name: Enable apache during restart
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Copy
+      copy:
+        src: "{{ source_file }}"
+        dest: "{{ destin_file }}"
+        mode: 0555
+      notify: Restart Apache For RedHat
+
+    when: ansible_os_family == "RedHat"
+
+  handlers:
+    - name: Restart Apache For Debian
+      service:
+        name: apache2
+        state: restarted
+      when: ansible_os_family == "Debian"
+
+    - name: Restart Apache For RedHat
+      service:
+        name: httpd
+        state: restarted
+      when: ansible_os_family == "RedHat"
+

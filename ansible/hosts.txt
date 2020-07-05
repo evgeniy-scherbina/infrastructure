@@ -1,0 +1,9 @@
+[linux:children]
+ubuntu
+red_hat
+
+[ubuntu]
+ubuntu1 ansible_host=54.144.198.157
+
+[red_hat]
+red_hat1 ansible_host=54.88.132.225

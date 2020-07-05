@@ -22,6 +22,15 @@ resource "aws_security_group" "allow-ssh-login" {
   }
 
   ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    # Please restrict your ingress to only necessary IPs and ports.
+    # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
+    cidr_blocks = ["0.0.0.0/0"] # add a CIDR block here
+  }
+
+  ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
@@ -96,4 +105,25 @@ resource "aws_instance" "jenkins_slave_1" {
 
     script = "jenkins_slave_1.sh"
   }
+}
+
+resource "aws_instance" "ansible" {
+  ami             = var.amis[var.region]
+  instance_type   = "t2.micro"
+  key_name        = "ssh-login-key"
+  security_groups = ["allow-ssh-login"]
+}
+
+resource "aws_instance" "ansible_slave1" {
+  ami             = var.amis[var.region]
+  instance_type   = "t2.micro"
+  key_name        = "ssh-login-key"
+  security_groups = ["allow-ssh-login"]
+}
+
+resource "aws_instance" "ansible_redhat" {
+ami             = var.amis["us-east-1-red-hat"]
+instance_type   = "t2.micro"
+key_name        = "ssh-login-key"
+security_groups = ["allow-ssh-login"]
 }
